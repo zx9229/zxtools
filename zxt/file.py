@@ -23,7 +23,7 @@ def saveByList(allLine, filename, mode, encoding, dialect=None, kwds={}, skipLin
         csvWriter.writerows(allLine)
 
 
-def loadByList(filename, mode, encoding, dialect=None, kwds={}, isListNotDict=True):  # yapf: disable
+def loadByList(filename, mode='r', encoding=None, dialect=None, kwds={}, isListNotDict=True):  # yapf: disable
     '''以(csv.reader)加载数据'''
     with codecs.open(filename, mode=mode, encoding=encoding) as f:
         allLine = []
@@ -59,12 +59,12 @@ def saveByDict(allLine, filename, mode, encoding, dialect=None, kwds={}):
         csvWriter.writerows(allLine)
 
 
-def loadByDict(filename, mode, encoding, dialect=None, kwds={}, isListNotDict=True):  # yapf: disable
+def loadByDict(filename, mode='r', encoding=None, dialect=None, kwds={}, isListNotDict=True):  # yapf: disable
     '''以(csv.DictReader)加载数据'''
     with open(filename, mode, encoding=encoding, newline='') as f:
         csvReader = csv.DictReader(f, dialect=dialect, **kwds)
         allLine = None
-        toList = lambda d: [d[col] for col in csvReader.fieldnames]
+        def toList(d): return [d[col] for col in csvReader.fieldnames]
         if isListNotDict:
             allLine = [toList(row) for row in csvReader]
         else:
