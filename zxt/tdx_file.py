@@ -5,6 +5,22 @@ import decimal
 import json
 import os
 
+
+def json_dumps(src):
+    def json_handler(obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.strftime("%Y-%m-%d %H:%M:%S.%f")
+        if isinstance(obj, datetime.date):
+            return obj.strftime("%Y-%m-%d")
+        if isinstance(obj, bytes):
+            return obj.__repr__()
+        if isinstance(obj, decimal.Decimal):
+            return float(obj)
+        raise TypeError(obj.__repr__() + " is not JSON serializable")
+
+    return json.dumps(src, sort_keys=True, indent=2, default=json_handler)
+
+
 # 通达信5分钟线数据格式解析
 # https://bbs.csdn.net/topics/392327877
 # 通达信日线 数据格式
@@ -56,7 +72,7 @@ class line_data_lc(object):
 
     @property
     def dict(self):
-        self._to_dict()
+        return self._to_dict()
 
     @property
     def datetime(self):
@@ -157,7 +173,7 @@ class line_data_lc(object):
             self._to_dict(), sort_keys=True, indent=2, default=json_handler)
 
     def __str__(self):
-        return self.__str__2()
+        return json_dumps(self.dict)
 
 
 class line_data_day(object):
@@ -248,7 +264,19 @@ class line_data_day(object):
             self._to_dict(), sort_keys=True, indent=2, default=json_handler)
 
     def __str__(self):
-        return self.__str__2()
+        return json_dumps(self.dict)
+
+
+def loadFile(filename, isDay):
+    dst = []
+    line_data = line_data_day() if isDay else line_data_lc()
+    with codecs.open(filename, 'rb') as f:
+        content = f.read()
+    assert len(content) % 32 == 0
+    for idx in range(0, len(content) // 32, 1):
+        line_data.set_data(content[idx * 32:(idx + 1) * 32])
+        dst.append(line_data.dict)
+    return dst
 
 
 if __name__ == '__main__':
