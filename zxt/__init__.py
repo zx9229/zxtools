@@ -5,6 +5,7 @@
 import zxt.db
 import zxt.file
 import zxt.hq_sinajs_cn
+import zxt.tdx_file
 
 # 在我们执行import时，当前目录是不会变的（就算是执行子目录的文件），还是需要完整的包名。
 # 只需要在最顶层的 __init__.py 中 import 即可.
