@@ -107,3 +107,4 @@ venv.bak/
 *.7z
 *.rar
 *.zip
+.vscode/
