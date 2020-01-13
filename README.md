@@ -8,4 +8,4 @@
 调试后，执行`zz_pth_zxt.py`脚本，删除某文件。  
 
 * 安装  
-执行`zz_python_setup.py_install.bat`脚本。  
+双击执行`zz_python_setup.py_install.bat`脚本。  
