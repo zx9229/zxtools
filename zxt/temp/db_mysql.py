@@ -12,6 +12,7 @@ def calcSqlLoadData(filename,
                     *args,
                     **kwargs):
     '''
+    setSection: 例如[setSection = 'SET some_field = some_value']
     https://dev.mysql.com/doc/refman/8.0/en/load-data.html
     LOAD DATA
         [LOW_PRIORITY | CONCURRENT] [LOCAL]
@@ -39,6 +40,8 @@ def calcSqlLoadData(filename,
     emptyReplaceIgnore = emptyReplaceIgnore.upper()
     if emptyReplaceIgnore not in ('', 'REPLACE', 'IGNORE'):
         raise ValueError('invalid param emptyReplaceIgnore')
+    if setSection != '' and setSection.strip().upper().index('SET') != 0:
+        raise ValueError('invalid param setSection')
 
     def funIFNULL(src, dst):
         return dst if src is None else src
@@ -78,7 +81,7 @@ def calcSqlLoadData(filename,
         ltb=convertParam(cDialect.lineterminator),
         field_name_list=','.join(headline))
     if setSection:
-        sqlStatement += ('SET ' + setSection)
+        sqlStatement += setSection
     return sqlStatement
 
 
