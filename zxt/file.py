@@ -3,12 +3,12 @@ import csv
 import os
 
 
-def saveByList(allLine, filename, mode, encoding, dialect=None, kwds={}, skipLineNum=0):  # yapf: disable
+def saveByList(allLine, filename, mode='w', encoding='utf8', dialect='excel', kwds={}, skipLineNum=0):  # yapf: disable
     '''
     以(csv.writer)保存数据
-    mode: a(append,附加), w(清空文件内容然后写入)
+    mode: a(append,附加), w(创建文件/清空文件内容,然后写入)
     encoding = 'utf_8'或'utf8'等.
-    skipLineNum = 1 跳过前1行数据.
+    skipLineNum = 1 跳过前1行数据(主要用于跳过headline).
     '''
     assert type(allLine) in (list, tuple)
     if 0 < len(allLine):
@@ -23,8 +23,13 @@ def saveByList(allLine, filename, mode, encoding, dialect=None, kwds={}, skipLin
         csvWriter.writerows(allLine)
 
 
-def loadByList(filename, mode='r', encoding=None, dialect=None, kwds={}, isListNotDict=True):  # yapf: disable
-    '''以(csv.reader)加载数据'''
+def loadByList(filename, mode='r', encoding='utf8', dialect='excel', kwds={}, isListNotDict=True):  # yapf: disable
+    '''
+    以(csv.reader)加载数据
+    isListNotDict = True  (默认值)
+    isListNotDict = True  从文件载入数据时,每一行都转换成list
+    isListNotDict = False 从文件载入数据时,将首行作为列名,每一行都转换成dict
+    '''
     with codecs.open(filename, mode=mode, encoding=encoding) as f:
         allLine = []
         csvReader = csv.reader(f, dialect=dialect, **kwds)
@@ -40,7 +45,7 @@ def loadByList(filename, mode='r', encoding=None, dialect=None, kwds={}, isListN
         return allLine
 
 
-def saveByDict(allLine, filename, mode, encoding, dialect=None, kwds={}):
+def saveByDict(allLine, filename, mode='w', encoding='utf8', dialect='excel', kwds={}):  # yapf: disable
     '''
     以(csv.DictWriter)保存数据
     Python CSV Reader/Writer 例子
@@ -59,14 +64,23 @@ def saveByDict(allLine, filename, mode, encoding, dialect=None, kwds={}):
         csvWriter.writerows(allLine)
 
 
-def loadByDict(filename, mode='r', encoding=None, dialect=None, kwds={}, isListNotDict=True):  # yapf: disable
-    '''以(csv.DictReader)加载数据'''
+def loadByDict(filename, mode='r', encoding='utf8', dialect='excel', kwds={}, isListNotDict=False):  # yapf: disable
+    '''
+    以(csv.DictReader)加载数据
+    isListNotDict = False (默认值)
+    isListNotDict = True  从文件载入数据时,每一行都转换成list
+    isListNotDict = False 从文件载入数据时,将首行作为列名,每一行都转换成dict
+    '''
     with open(filename, mode, encoding=encoding, newline='') as f:
         csvReader = csv.DictReader(f, dialect=dialect, **kwds)
         allLine = None
-        def toList(d): return [d[col] for col in csvReader.fieldnames]
+
+        def toList(d):
+            return [d[col] for col in csvReader.fieldnames]
+
         if isListNotDict:
             allLine = [toList(row) for row in csvReader]
+            allLine.insert(0, [col for col in csvReader.fieldnames])
         else:
             allLine = [row for row in csvReader]
         return allLine
