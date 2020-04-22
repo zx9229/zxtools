@@ -35,7 +35,6 @@ def select_mysql(cursor, sqlStr, isDictNotList=True):
         head = [col[0] for col in cursor.description]
         results = [calcData(row, head) for row in cursor]
         results.insert(0, head)
-
     return results
 
 

@@ -8,7 +8,9 @@ def calcSqlLoadData(filename,
                     dialect="excel",
                     isLocal=True,
                     emptyReplaceIgnore='',
-                    setSection=''):
+                    setSection='',
+                    *args,
+                    **kwargs):
     '''
     https://dev.mysql.com/doc/refman/8.0/en/load-data.html
     LOAD DATA
@@ -78,6 +80,14 @@ def calcSqlLoadData(filename,
     if setSection:
         sqlStatement += ('SET ' + setSection)
     return sqlStatement
+
+
+def mysqlLoadData(cursor, filename, tablename, *args, **kwargs):
+    '''
+    记得自己写[connection.commit()]以提交数据;
+    '''
+    sqlStr = calcSqlLoadData(filename, tablename, *args, **kwargs)
+    cursor.execute(sqlStr)
 
 
 if __name__ == '__main__':
