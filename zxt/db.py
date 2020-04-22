@@ -7,13 +7,24 @@ import sqlite3
 
 
 def initConnection_mysql(host, port, user, password, database, charset, local_infile=False, *args, **kwargs):  # yapf: disable
-    ''' 执行 help(pymysql.connections.Connection.__init__) 查看详情 '''
+    '''
+    执行 help(pymysql.connections.Connection.__init__) 查看详情
+    params = { 'host': '主机', 'port': 0, 'user': '用户', 'password': '密码', 'database': '', 'charset': 'utf8', 'local_infile': False }
+    connection = initConnection_mysql(**params)
+    '''
+    port = int(port) if type(port) == str else port
     connection = pymysql.connect(host=host, port=port, user=user, passwd=password, db=database, charset=charset, cursorclass=pymysql.cursors.DictCursor, local_infile=local_infile)  # yapf: disable
     # 要执行(LOAD DATA)需要(local_infile=1)
     return connection
 
 
 def initConnection_mssql(host, port, user, password, database, charset, *args, **kwargs):  # yapf: disable
+    '''
+    执行 help(pymssql.connect) 查看详情
+    params = { 'host': '主机', 'port': 0, 'user': '用户', 'password': '密码', 'database': '', 'charset': 'utf8', 'local_infile': False }
+    connection = initConnection_mysql(**params)
+    '''
+    port = str(port) if type(port) == int else port
     connection = pymssql.connect(host=host, port=port, user=user, password=password, database=database, charset=charset)  # yapf: disable
     return connection
 
