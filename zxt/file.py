@@ -1,4 +1,3 @@
-import codecs
 import csv
 import os
 
@@ -18,7 +17,7 @@ def saveByList(allLine, filename, mode='w', encoding='utf8', dialect='excel', kw
     dirName = os.path.dirname(filename)
     if dirName and (not os.path.exists(dirName)):
         os.makedirs(dirName)
-    with open(filename, mode, encoding=encoding, newline='') as f:
+    with open(filename, mode=mode, encoding=encoding, newline='') as f:
         csvWriter = csv.writer(f, dialect=dialect, **kwds)
         csvWriter.writerows(allLine)
 
@@ -30,7 +29,7 @@ def loadByList(filename, mode='r', encoding='utf8', dialect='excel', kwds={}, is
     isListNotDict = True  从文件载入数据时,每一行都转换成list
     isListNotDict = False 从文件载入数据时,将首行作为列名,每一行都转换成dict
     '''
-    with codecs.open(filename, mode=mode, encoding=encoding) as f:
+    with open(filename, mode=mode, encoding=encoding, newline='') as f:
         allLine = []
         csvReader = csv.reader(f, dialect=dialect, **kwds)
         fields = None
@@ -57,7 +56,7 @@ def saveByDict(allLine, filename, mode='w', encoding='utf8', dialect='excel', kw
     dirName = os.path.dirname(filename)
     if dirName and (not os.path.exists(dirName)):
         os.makedirs(dirName)
-    with open(filename, mode, encoding=encoding, newline='') as f:
+    with open(filename, mode=mode, encoding=encoding, newline='') as f:
         headers = sorted([k for k in allLine[0]])
         csvWriter = csv.DictWriter(f, fieldnames=headers, dialect=dialect, **kwds)  # yapf: disable
         csvWriter.writeheader()
@@ -71,7 +70,7 @@ def loadByDict(filename, mode='r', encoding='utf8', dialect='excel', kwds={}, is
     isListNotDict = True  从文件载入数据时,每一行都转换成list
     isListNotDict = False 从文件载入数据时,将首行作为列名,每一行都转换成dict
     '''
-    with open(filename, mode, encoding=encoding, newline='') as f:
+    with open(filename, mode=mode, encoding=encoding, newline='') as f:
         csvReader = csv.DictReader(f, dialect=dialect, **kwds)
         allLine = None
 
