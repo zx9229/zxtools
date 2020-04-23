@@ -2,6 +2,29 @@ import csv
 import os
 
 
+def listTOdict(listLine):
+    '''listLine 是 [ ['k1','k2'], ['1v1','1v2'], ['2v1','2v2'] ]'''
+    if len(listLine) == 0:
+        raise ValueError('invalid param listLine with [len(listLine) == 0]')
+    head = listLine[0]
+    dictLine = [dict(zip(head, data)) for data in listLine[1:]]
+    return dictLine
+
+
+def dictTOlist(dictLine):
+    '''dictLine 是 [ {'k1':'1v1','k2':'1v2'}, {'k1':'2v1','k2':'2v2'} ]'''
+    if len(dictLine) == 0:
+        raise ValueError('invalid param dictLine with [len(dictLine) == 0]')
+
+    def calcData(d, cols):
+        return [d[col] for col in cols]
+
+    head = sorted([k for k in dictLine[0]])
+    listLine = [calcData(data, head) for data in dictLine]
+    listLine.insert(0, head)
+    return listLine
+
+
 def saveByList(allLine, filename, mode='w', encoding='utf8', dialect='excel', kwds={}, skipLineNum=0):  # yapf: disable
     '''
     以(csv.writer)保存数据

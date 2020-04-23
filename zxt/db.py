@@ -34,7 +34,8 @@ def initConnection_sqlite(database, *args, **kwargs):
     return connection
 
 
-def select_mysql(cursor, sqlStr, isDictNotList=True):
+def select_mysql(cursor, sqlStr, isDictNotList=False):
+    '''如果结果是空,且(isDictNotList=True),那么结果为空,不利于保存到文件'''
     cursor.execute(sqlStr)
     if isDictNotList:
         results = [dict(row) for row in cursor]
@@ -49,7 +50,8 @@ def select_mysql(cursor, sqlStr, isDictNotList=True):
     return results
 
 
-def select_mssql(cursor, sqlStr, isDictNotList=True):
+def select_mssql(cursor, sqlStr, isDictNotList=False):
+    '''如果结果是空,且(isDictNotList=True),那么结果为空,不利于保存到文件'''
     cursor.execute(sqlStr)
     if isDictNotList:
         head = [col[0] for col in cursor.description]
@@ -61,7 +63,8 @@ def select_mssql(cursor, sqlStr, isDictNotList=True):
     return results
 
 
-def select_sqlite(cursor, sqlStr, isDictNotList=True):
+def select_sqlite(cursor, sqlStr, isDictNotList=False):
+    '''如果结果是空,且(isDictNotList=True),那么结果为空,不利于保存到文件'''
     return select_mssql(cursor, sqlStr, isDictNotList)
 
 
