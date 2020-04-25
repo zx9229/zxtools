@@ -4,6 +4,7 @@ import datetime
 import decimal
 import json
 import os
+import argparse
 
 
 def json_dumps(src):
@@ -280,9 +281,14 @@ def loadFile(filename, isDay):
 
 
 if __name__ == '__main__':
-    filepath = r"C:/new_tdxqh/vipdoc/ds/lday/30#AUL8.day"  # 黄金主连.
-    filepath = r"C:/new_tdxqh/vipdoc/ds/minline/30#AUL8.lc1"  # 黄金主连.
-
+    parse = argparse.ArgumentParser()
+    parse.add_argument('-f', '--file', type=str)
+    args = parse.parse_args()
+    if args.file is None:
+        filepath = r"C:/new_tdxqh/vipdoc/ds/lday/30#AUL8.day"  # 黄金主连.
+        filepath = r"C:/new_tdxqh/vipdoc/ds/minline/30#AUL8.lc1"  # 黄金主连.
+    else:
+        filepath = args.file
     ext = os.path.splitext(filepath)[1]
     if ext in ('.lc1', '.lc5'):
         line_data = line_data_lc()
