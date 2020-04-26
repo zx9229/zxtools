@@ -22,6 +22,8 @@ def json_dumps(src):
     return json.dumps(src, sort_keys=True, indent=2, default=json_handler)
 
 
+# 通达信各周期数据格式（day、lc5、lc1）详解
+# http://www.sigmagu.com/paper/7
 # 通达信5分钟线数据格式解析
 # https://bbs.csdn.net/topics/392327877
 # 通达信日线 数据格式
