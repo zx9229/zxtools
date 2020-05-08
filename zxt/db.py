@@ -34,6 +34,20 @@ def initConnection_sqlite(database, *args, **kwargs):
     return connection
 
 
+def select_sqlalchemy(connection, sqlStr, isDictNotList=False):
+    '''如果结果是空,且(isDictNotList=True),那么结果为空,不利于保存到文件'''
+    ResultProxy = connection.execute(sqlStr)
+    if isDictNotList:
+        head = ResultProxy.keys()
+        results = [dict(zip(head, data)) for data in ResultProxy]
+    else:
+        head = ResultProxy.keys()
+        results = ResultProxy.fetchall()
+        results.insert(0, head)
+    ResultProxy.close()
+    return results
+
+
 def select_mysql(cursor, sqlStr, isDictNotList=False):
     '''如果结果是空,且(isDictNotList=True),那么结果为空,不利于保存到文件'''
     cursor.execute(sqlStr)
