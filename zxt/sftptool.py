@@ -5,14 +5,14 @@ import stat
 
 class sftptool(object):
     @staticmethod
-    def sftpClient(host, port, user, pswd):
+    def sftpClient(host, port, user, pswd, *args, **kwargs):
         client = paramiko.Transport((host, int(port)))
         client.connect(username=user, password=pswd)
         sftpObj = paramiko.SFTPClient.from_transport(client)
         return sftpObj
 
     @staticmethod
-    def sftpClientPPK(host, port, user, privateKey):
+    def sftpClientPPK(host, port, user, privateKey, *args, **kwargs):
         rsaKey = paramiko.RSAKey.from_private_key_file(privateKey)
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
