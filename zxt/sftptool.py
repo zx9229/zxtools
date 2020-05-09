@@ -21,26 +21,27 @@ class sftptool(object):
         return sftpObj
 
     @staticmethod
-    def sftpClientClose(sftpCli):
+    def sftpClientClose(sftpCli: paramiko.SFTPClient):
         sftpCli.close()
 
     @staticmethod
-    def sftpGet(sftpCli, remotePath, localPath):
+    def sftpGet(sftpCli: paramiko.SFTPClient, remotePath, localPath):
         """  paramiko.SFTPClient  """
         if localPath[-1:] in ('/', '\\'):
             localPath = os.path.join(localPath, os.path.basename(remotePath))
         elif localPath[-1:] == os.curdir:
             localPath = os.path.join(os.path.dirname(localPath), os.path.basename(remotePath))  # yapf: disable
         localPath = localPath.replace('\\', '/')
+        remotePath = remotePath.replace('\\', '/')
         dirName = os.path.dirname(localPath)
         if dirName:
             os.makedirs(dirName, exist_ok=True)
         sftpCli.stat(remotePath)  # 检查远程文件/文件夹是否存在.
-        sftpCli.get(remotePath, localPath)
+        sftpCli.get(remotePath, localPath)  # (remotePath)和(localPath)必须都是文件.
         return localPath
 
     @staticmethod
-    def sftpPut(sftpCli, localPath, remotePath):
+    def sftpPut(sftpCli: paramiko.SFTPClient, localPath, remotePath):
         ''' sftp断点续传 https://www.jianshu.com/p/19319228ece0 '''
         if remotePath[-1:] in ('/', '\\'):
             remotePath = os.path.join(remotePath, os.path.basename(localPath))
@@ -55,9 +56,8 @@ class sftptool(object):
         return remotePath
 
     @staticmethod
-    def makedirs_remote(sftpCli, name, mode=0o777, exist_ok=False):
+    def makedirs_remote(sftpCli: paramiko.SFTPClient, name, mode=0o777, exist_ok=False):  # yapf: disable
         ''' 以 os.makedirs 为蓝本进行了修改 '''
-
         def isf_isd_remote(sftpClientObject, path: str):
             # 判断一个远程路径的是文件还是目录
             try:
@@ -67,7 +67,7 @@ class sftptool(object):
                 if isF and isD:
                     raise RuntimeError('this path is both a file and a directory')  # yapf: disable
                 return isF, isD
-            except FileNotFoundError as ex:
+            except FileNotFoundError:
                 return False, False
 
         def exists_remote(sftpClientObject, path):
@@ -98,12 +98,16 @@ class sftptool(object):
                 raise
 
     @staticmethod
-    def exists(sftpCli, path: str):
+    def listdir(sftpCli: paramiko.SFTPClient, path="."):
+        return sftpCli.listdir(path)
+
+    @staticmethod
+    def exists(sftpCli: paramiko.SFTPClient, path: str):
         ''' 类似 os.path.exists 函数 '''
         try:
             sftpCli.stat(path)
             return True
-        except FileNotFoundError as ex:
+        except FileNotFoundError:
             return False
 
 
