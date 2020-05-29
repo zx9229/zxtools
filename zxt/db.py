@@ -6,7 +6,7 @@ import pymysql
 import sqlite3
 
 
-def initConnection_mysql(host, port, user, password, database, charset, local_infile=False, *args, **kwargs):  # yapf: disable
+def initConnection_pymysql(host, port, user, password, database, charset, local_infile=False, *args, **kwargs):  # yapf: disable
     '''
     执行 help(pymysql.connections.Connection.__init__) 查看详情
     params = { 'host': '主机', 'port': 0, 'user': '用户', 'password': '密码', 'database': '', 'charset': 'utf8', 'local_infile': False }
@@ -18,7 +18,7 @@ def initConnection_mysql(host, port, user, password, database, charset, local_in
     return connection
 
 
-def initConnection_mssql(host, port, user, password, database, charset, *args, **kwargs):  # yapf: disable
+def initConnection_pymssql(host, port, user, password, database, charset, *args, **kwargs):  # yapf: disable
     '''
     执行 help(pymssql.connect) 查看详情
     params = { 'host': '主机', 'port': 0, 'user': '用户', 'password': '密码', 'database': '', 'charset': 'utf8', 'local_infile': False }
@@ -29,7 +29,7 @@ def initConnection_mssql(host, port, user, password, database, charset, *args, *
     return connection
 
 
-def initConnection_sqlite(database, *args, **kwargs):
+def initConnection_sqlite3(database, *args, **kwargs):
     connection = sqlite3.connect(database)
     return connection
 
@@ -48,7 +48,7 @@ def select_sqlalchemy(connection, sqlStr, isDictNotList=False):
     return results
 
 
-def select_mysql(cursor, sqlStr, isDictNotList=False):
+def select_pymysql(cursor, sqlStr, isDictNotList=False):
     '''如果结果是空,且(isDictNotList=True),那么结果为空,不利于保存到文件'''
     cursor.execute(sqlStr)
     if isDictNotList:
@@ -64,7 +64,7 @@ def select_mysql(cursor, sqlStr, isDictNotList=False):
     return results
 
 
-def select_mssql(cursor, sqlStr, isDictNotList=False):
+def select_pymssql(cursor, sqlStr, isDictNotList=False):
     '''如果结果是空,且(isDictNotList=True),那么结果为空,不利于保存到文件'''
     cursor.execute(sqlStr)
     if isDictNotList:
@@ -77,9 +77,9 @@ def select_mssql(cursor, sqlStr, isDictNotList=False):
     return results
 
 
-def select_sqlite(cursor, sqlStr, isDictNotList=False):
+def select_sqlite3(cursor, sqlStr, isDictNotList=False):
     '''如果结果是空,且(isDictNotList=True),那么结果为空,不利于保存到文件'''
-    return select_mssql(cursor, sqlStr, isDictNotList)
+    return select_pymssql(cursor, sqlStr, isDictNotList)
 
 
 def guess_placeholder(cursor, PH):
@@ -185,7 +185,7 @@ def saveJsonToSqlite(allLine, dbName, tbName, dtie=False, dvie=False):
             pass
         else:  # ValueError:传入无效的参数.
             raise ValueError('param allLine illegal')
-    connection = initConnection_sqlite(dbName)
+    connection = initConnection_sqlite3(dbName)
     connection.create_function('JSON_EXTRACT', 2, JSON_EXTRACT)
     cursor = connection.cursor()
     if dtie:  # Drop Table If Exists
