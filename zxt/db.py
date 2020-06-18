@@ -4,6 +4,17 @@ import json
 import pymssql
 import pymysql
 import sqlite3
+import sqlalchemy
+
+
+def initConnection_sqlalchemy(*args, **kwargs):
+    '''
+    params = { "name_or_url": "mysql://用户:密码@主机:端口/数据库?local_infile=1", "encoding": "utf8" }
+    connection = initConnection_sqlalchemy(**params)
+    '''
+    sqlalchemy_engine = sqlalchemy.create_engine(*args, **kwargs)
+    sqlalchemy_connection = sqlalchemy_engine.connect()
+    return sqlalchemy_connection
 
 
 def initConnection_pymysql(host, port, user, password, database, charset, local_infile=False, *args, **kwargs):  # yapf: disable
@@ -171,7 +182,6 @@ def saveToDbTable(cursor, tbName, allLine, uniqueKeys, PH=None):
 
 def saveJsonToSqlite(allLine, dbName, tbName, dtie=False, dvie=False):
     ''' SELECT json_extract(jsontext, '$.column1') FROM tbName '''
-
     def JSON_EXTRACT(jsontext, jsonpath):
         pass
 
