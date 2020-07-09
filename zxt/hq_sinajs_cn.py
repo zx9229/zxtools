@@ -1,13 +1,13 @@
 import datetime
 import urllib
 import urllib.request
+import re
 
 
 def src2dst(src):
     '''
     一个简单的打印函数
     '''
-
     def d2s(data: dict):
         lst = sorted(data.items(), key=lambda d: d[0])
         lst = ['"{}" : "{}"'.format(item[0], item[1]) for item in lst]
@@ -26,7 +26,6 @@ def real(code_list):
     获取实时行情
     https://blog.csdn.net/u012041523/article/details/71107788
     '''
-
     def toReal(s):
         # return decimal.Decimal(s) if s else None
         return float(s) if s else None
@@ -90,6 +89,52 @@ def real(code_list):
         data['datetime'] = toDateTime(data.get('date'), data.get('time'))
     data_list = data_list[0] if len(data_list) == 1 else data_list
     return data_list
+
+
+def tmp_test(code_list):
+    '''
+    http://hq.sinajs.cn/list=sh510300
+    http://hq.sinajs.cn/list=P_OP_io2007C4700
+    http://hq.sinajs.cn/list=CON_OP_10002503
+    '''
+    if type(code_list) in (tuple, list):
+        code_list = ','.join(code_list)
+
+    url = 'http://hq.sinajs.cn/list={codeList}'.format(codeList=code_list)
+    content = urllib.request.urlopen(url).read().decode('GB18030')
+
+    result_list = []
+    fields_list = [
+        ("名字", "今开盘", "昨收盘", "最新价", "最高价", "最低价", "买1价", "卖1价", "成交量", "成交额",
+         "买1量", "买1价", "买2量", "买2价", "买3量", "买3价", "买4量", "买4价", "买5量", "买5价",
+         "卖1量", "卖1价", "卖2量", "卖2价", "卖3量", "卖3价", "卖4量", "卖4价", "卖5量", "卖5价",
+         "日期", "时间", "未知字段1", "未知字段2"),
+        ("买1量", "买1价", "最新价", "卖1价", "卖1量", "持仓量", "未知字段1", "行权价", "前结算",
+         "今开盘", "涨停价", "跌停价", "卖5价", "卖5量", "卖4价", "卖4量", "卖3价", "卖3量", "卖2价",
+         "卖2量", "卖1价", "卖1量", "买1价", "买1量", "买2价", "买2量", "买3价", "买3量", "买4价",
+         "买4量", "买5价", "买5量", "时间戳", "未知字段1", "未知字段2", "未知字段3", "未知字段4",
+         "未知字段5", "未知字段6", "最高价", "最低价", "未知字段7", "未知字段8", "未知字段9"),
+        ("买1量", "买1价", "最新价", "卖1价", "卖1量", "持仓量", "涨跌幅", "行权价", "昨收", "今开",
+         "涨停", "跌停", "卖5价", "卖5量", "卖4价", "卖4量", "卖3价", "卖3量", "卖2价", "卖2量",
+         "卖1价", "卖1量", "买1价", "买1量", "买2价", "买2量", "买3价", "买3量", "买4价", "买4量",
+         "买5价", "买5量", "时间戳", "未知字段1", "未知字段2", "未知字段3", "标的代码", "合约简称", "振幅",
+         "最高价", "最低价", "成交量", "未知字段4", "未知字段5", "昨结算", "call_put", "到期日",
+         "还有多少天", "未知字段6", "内在价值", "时间价值")
+    ]
+    rePattern = re.compile(
+        r'var hq_str_(?P<sina_code>.*?)="(?P<sina_data>.*?)";')
+    for line in content.splitlines():
+        reMatch = rePattern.match(line)
+        sina_code = reMatch.groupdict()['sina_code']
+        sina_data = reMatch.groupdict()['sina_data']
+        field_lst = sina_data.split(',')
+        for fields in fields_list:
+            if len(fields) == len(field_lst):
+                field_map = dict(zip(fields, field_lst))
+                field_map['sina_code'] = sina_code
+                result_list.append(field_map)
+                break
+    return result_list
 
 
 if __name__ == "__main__":
