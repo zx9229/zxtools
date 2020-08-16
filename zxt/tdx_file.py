@@ -253,6 +253,56 @@ class line_data_lc(object):
         return json_dumps(self.dict)
 
 
+class line_data_lc_qh(object):
+    '''分钟线,期货,比如通达信的(IFL8)(沪深主连)'''
+    def __init__(self, content: bytes = None, *args, **kwargs):
+        self._r_list = [
+            field_resolver('_r_date', 'unsignedshort', 0, 1),
+            field_resolver('_r_time', 'short', 2, 3),
+            field_resolver('_r_open', 'float', 4, 7, ndigits=4),
+            field_resolver('_r_high', 'float', 8, 11, ndigits=4),
+            field_resolver('_r_low', 'float', 12, 15, ndigits=4),
+            field_resolver('_r_close', 'float', 16, 19, ndigits=4),
+            field_resolver('_r_oi', 'int', 20, 23),
+            field_resolver('_r_volume', 'int', 24, 27),
+            field_resolver('_r_reserved', 'float', 28, 31, ndigits=4)
+        ]
+        self._c_list = [
+            field_conv('_c_datetime', field_conv.tdx_field_to_datetime, arg1=ObjWrap(self, '_r_date'), arg2=ObjWrap(self, '_r_time'))
+        ]  # yapf: disable
+        if content is not None:
+            self.set_data(content)
+
+    @property
+    def dict(self):
+        return self._to_dict()
+
+    def set_data(self, content: bytes):
+        assert type(content) == bytes and len(content) == 32
+        for item in self._r_list:
+            item.calc(content)
+            setattr(self, item._name, item._value)
+        for item in self._c_list:
+            item.calc()
+            setattr(self, item._name, item._value)
+
+    def _to_dict(self):
+        d = {
+            "datetime": self._c_datetime,
+            "open": self._r_open,
+            "high": self._r_high,
+            "low": self._r_low,
+            "close": self._r_close,
+            "io": self._r_oi,
+            "volume": self._r_volume,
+            "reserved": self._r_reserved
+        }
+        return d
+
+    def __str__(self):
+        return json_dumps(self.dict)
+
+
 class line_data_day_stock(object):
     '''日线,股票'''
 
@@ -366,7 +416,7 @@ class line_data_day_fund(object):
 def guess_resolver(filepath: str = None, resolver_name: str = None):
     resolver_object = None
     if resolver_name is not None:
-        resolver_object = eval('{name}()'.format(resolver_name))
+        resolver_object = eval('{name}()'.format(name=resolver_name))
     else:
         basename = os.path.split(filepath)[1]
         name, ext = os.path.splitext(basename.lower())

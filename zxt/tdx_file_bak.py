@@ -6,6 +6,15 @@ import json
 import os
 import argparse
 
+# 通达信常用文件说明一览
+# http://www.qh171.com/shizhanjiqiao/4235.html
+# 软件使用4--通达信根目录的使用
+# http://blog.sina.com.cn/s/blog_16c4b21700102wyjw.html
+# 通达信目录文件结构及说明
+# https://www.iteye.com/blog/daimajishu-1089603
+# 通达信行业、板块与自定义指数等dat文件文件头
+# https://blog.csdn.net/liuyukuan/article/details/79483812
+
 
 def json_dumps(src):
     def json_handler(obj):
